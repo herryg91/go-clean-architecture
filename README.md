@@ -61,6 +61,9 @@ In this repository, we also using 4 layers (with modification) like this:
     ├── service.yaml
     └── README.md
 
+## Postman Collection
+https://www.getpostman.com/collections/616edf710f86853574d2
+
 ## Future examples
 * Rest API service with background worker
 * Rest API service with event driven system (pubsub)
