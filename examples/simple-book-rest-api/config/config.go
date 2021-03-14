@@ -21,6 +21,5 @@ func New() Config {
 	cfg := Config{}
 	envconfig.MustProcess("", &cfg)
 
-	cfg.DBPass = "password"
 	return cfg
 }
