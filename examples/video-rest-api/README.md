@@ -3,3 +3,12 @@ Just a simple example of golang clean architecture implementation using 1 entiti
 
 **Usecase in this example**
 * Simple CRUD service
+
+**List of endpoints**
+```bash
+GET    /video
+GET    /video/:id
+POST   /video
+POST   /video/:id
+DELETE /video/:id
+```
