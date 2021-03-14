@@ -4,6 +4,8 @@ The right way to implement clean architecture on golang (I think)
 ## Description
 The Clean Architecture is a software architecture proposed by Robert C. Martin (better known as Uncle Bob). In this repository, the contents are list of examples of implementation of Clean Architecture in Golang. The examples will using real world scenario. 
 
+New in clean architecture? I suggest you to look at examples/video-rest-api: https://github.com/herryg91/go-clean-architecture/tree/main/examples/video-rest-api
+
 To understand more about Clean Architecture: https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
 
 ## Dependency Rule
