@@ -25,7 +25,7 @@ In this repository, we also using 4 layers (with modification) like this:
 
 ## Design Structure
 ### Diagram
-
+![picture alt](https://raw.githubusercontent.com/herryg91/go-clean-architecture/main/diagram.png "go-clean-architecture diagram")
 
 ### Folder Structure
 
