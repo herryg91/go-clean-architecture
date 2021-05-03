@@ -135,11 +135,9 @@ Example, we have users-api which need to serve endpoint api like this:
 - Register (POST http://{host}/auth/register)
 - ShowProfile (POST http://{host}/profile)
 - EditProfile (PUT http://{host}/profile)
+
 then, based on the product requirement we can split it into 2 usecase: `AuthenticationUsecase` (Login, Logout, Register) and `ProfileUsecase` (ShowProfile, EditProfile)
 
-- Separate by usecase (user journey) on most cases (best practice). Can be domain but on certain cases 
-- Usecase means it strongly tied to user story, so the point of view is user centric. To get clue about separating this, look up into PRD or Usecase Diagram
-- In this example, the apis serving 2 usecase / user journey which is authentication usecase and profile usecase. From user perspective, authentication usecase and profile usecase will have it's own user journey. Authentication usecasee should be on login/register page. And profile usecase usually in profile page or CMS page (used by admin).
 
 
 ## Future examples
