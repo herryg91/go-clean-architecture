@@ -27,7 +27,7 @@ In this repository, we also using 4 layers (with modification) like this:
 
 ## Design Structure
 ### Diagram
-![picture alt](https://raw.githubusercontent.com/herryg91/go-clean-architecture/main/diagram.png "go-clean-architecture diagram")
+<img src="https://raw.githubusercontent.com/herryg91/go-clean-architecture/main/diagram.png" alt="drawing" width="400"/>
 
 ### Folder Structure
     .
@@ -137,7 +137,6 @@ Example, we have users-api which need to serve endpoint api like this:
 - EditProfile (PUT http://{host}/profile)
 
 then, based on the product requirement we can split it into 2 usecase: `AuthenticationUsecase` (Login, Logout, Register) and `ProfileUsecase` (ShowProfile, EditProfile)
-
 
 
 ## Future examples
