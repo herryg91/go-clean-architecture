@@ -1,16 +1,4 @@
--- DOWN
-DROP TABLE IF EXISTS videos;
-
--- UP
-CREATE TABLE `videos` (
-    id INT NOT NULL AUTO_INCREMENT,
-    title VARCHAR(255) NOT NULL,
-    url VARCHAR(255) NOT NULL,
-    
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY ( id )
-);
+USE gca;
 
 INSERT INTO videos (title, url) values ("Learn Go Programming - Golang Tutorial for Beginners", "https://www.youtube.com/watch?v=YS4e4q9oBaU");
 INSERT INTO videos (title, url) values ("7 Habits of Highly Effective Programmers (ft. ex-Google TechLead)", "https://www.youtube.com/watch?v=W8ykZNSLDqE");

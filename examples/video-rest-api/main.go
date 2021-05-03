@@ -5,29 +5,28 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/herryg91/go-clean-architecture/examples/video-rest-api/app/usecase/crud_video"
 	"github.com/herryg91/go-clean-architecture/examples/video-rest-api/config"
-	video_datasource "github.com/herryg91/go-clean-architecture/examples/video-rest-api/drivers/datasource/mysql/videos"
+	"github.com/herryg91/go-clean-architecture/examples/video-rest-api/handler"
+	"github.com/herryg91/go-clean-architecture/examples/video-rest-api/repository/video_repository_v1"
+	"gorm.io/gorm/logger"
 
-	"github.com/herryg91/go-clean-architecture/examples/video-rest-api/drivers/handler"
 	"github.com/herryg91/go-clean-architecture/examples/video-rest-api/pkg/mysql"
-	"github.com/herryg91/go-clean-architecture/examples/video-rest-api/usecase/crud_videos"
 )
 
 func main() {
 	cfg := config.New()
 	router := gin.Default()
 
-	db, err := mysql.Connect(cfg.DBHost, cfg.DBPort, cfg.DBUserName, cfg.DBPassword, cfg.DBDatabaseName, cfg.DBLogMode)
+	db, err := mysql.Connect(cfg.DBHost, cfg.DBPort, cfg.DBUserName, cfg.DBPassword, cfg.DBDatabaseName, logger.LogLevel(cfg.DBLogMode))
 	if err != nil {
 		log.Panicln("Failed to Initialized mysql DB:", err)
 	}
 
-	videoDatasource := video_datasource.NewMysqlDatasource(db)
+	video_repo := video_repository_v1.New(db)
+	crud_video_uc := crud_video.NewUseCase(video_repo)
 
-	crudVideosRepo := crud_videos.NewRepository(db, videoDatasource)
-	crudVideosUsecase := crud_videos.NewUsecase(crudVideosRepo)
-
-	h := handler.NewHandler(crudVideosUsecase)
+	h := handler.NewHandler(crud_video_uc)
 
 	router.GET("/video", h.GetVideos)
 	router.GET("/video/:id", h.GetVideo)

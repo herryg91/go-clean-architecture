@@ -1,4 +1,4 @@
-package video_datasource
+package video_repository_v1
 
 import (
 	"time"
