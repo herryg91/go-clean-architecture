@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
+	gormMysql "gorm.io/driver/mysql"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
+	"gorm.io/gorm/schema"
 )
 
 type mysql struct {
@@ -14,14 +16,14 @@ type mysql struct {
 	DBUserName                    string
 	DBPass                        string
 	DBDatabaseName                string
-	DBLogMode                     bool
+	DBLogMode                     logger.LogLevel
 	maxIdleConnection             int
 	maxOpenConnection             int
 	connectionMaxLifetimeInSecond int
 }
 type mysqlOption func(*mysql)
 
-func Connect(DBHost string, DBPort string, DBUserName string, DBPass string, DBDatabaseName string, DBLogMode bool, options ...mysqlOption) (*gorm.DB, error) {
+func Connect(DBHost string, DBPort string, DBUserName string, DBPass string, DBDatabaseName string, DBLogMode logger.LogLevel, options ...mysqlOption) (*gorm.DB, error) {
 	db := &mysql{
 		DBHost:                        DBHost,
 		DBPort:                        DBPort,
@@ -42,21 +44,25 @@ func Connect(DBHost string, DBPort string, DBUserName string, DBPass string, DBD
 }
 
 func connect(param *mysql) (*gorm.DB, error) {
-	dbDialect := "mysql"
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?loc=Local&parseTime=true",
 		param.DBUserName, param.DBPass, param.DBHost, param.DBPort, param.DBDatabaseName)
 
-	db, err := gorm.Open(dbDialect, dsn)
+	db, err := gorm.Open(gormMysql.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.LogLevel(param.DBLogMode)),
+		NamingStrategy: schema.NamingStrategy{
+			SingularTable: true,
+		},
+	})
 	if err != nil {
 		return nil, err
 	}
+	// set configuration pooling connection
+	mysqlDb, _ := db.DB()
+	mysqlDb.SetMaxOpenConns(param.maxOpenConnection)
+	mysqlDb.SetConnMaxLifetime(time.Duration(param.connectionMaxLifetimeInSecond) * time.Minute)
+	mysqlDb.SetMaxIdleConns(param.maxIdleConnection)
 
-	db.LogMode(param.DBLogMode)
-	// setup db pool connections
-	db.DB().SetMaxIdleConns(param.maxIdleConnection)
-	db.DB().SetMaxOpenConns(param.maxOpenConnection)
-	db.DB().SetConnMaxLifetime(time.Second * time.Duration(param.connectionMaxLifetimeInSecond))
-	return db, err
+	return db, nil
 }
 
 func SetMaxIdleConns(conns int) mysqlOption {

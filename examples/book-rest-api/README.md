@@ -14,14 +14,11 @@ This service had a purpose to serve a CMS used by operational team to manage mas
 **List of endpoints**
 ```bash
 GET    /cms/author
-GET    /cms/author
 GET    /cms/author/:id
 POST   /cms/author
-POST   /cms/author/:id
 GET    /cms/book
 GET    /cms/book/:id
 POST   /cms/book
-POST   /cms/book/:id
 GET    /author/:id/profile
 POST   /search/author
 ```

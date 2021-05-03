@@ -20,3 +20,10 @@ func (author *Author) ToBookAuthor() *BookAuthor {
 		Name: author.Name,
 	}
 }
+
+func (author *Author) ToProfile() *AuthorProfile {
+	return &AuthorProfile{
+		Author: *author,
+		Age:    helpers.CountAge(author.Birthdate.Time()),
+	}
+}
