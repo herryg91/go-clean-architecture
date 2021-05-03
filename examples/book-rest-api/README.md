@@ -5,6 +5,16 @@ This is example of rest api using clean architecture with 2 entities:
 
 This service had a purpose to serve a CMS used by operational team to manage master data of **book** and **author**. Beside that this service also used by end user service client to to show author's profile.
 
+**How to Run?
+Prerequisite:
+- docker
+- golang
+
+```
+make build
+go run main.go
+```
+
 **Usecase solved in this example**
 * Aggregate 2 or more database's tables
 * Multiple usecases:

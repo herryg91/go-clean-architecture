@@ -57,7 +57,7 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/cms/author/1",
+							"raw": "localhost:8080/cms/author/6",
 							"host": [
 								"localhost"
 							],
@@ -65,36 +65,7 @@
 							"path": [
 								"cms",
 								"author",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "UpdateAuthor",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"test name update 2\",\n    \"birthdate\": \"1999-01-01\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "localhost:8080/cms/author/12",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"cms",
-								"author",
-								"12"
+								"6"
 							]
 						}
 					},
@@ -146,7 +117,7 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/cms/book/4",
+							"raw": "localhost:8080/cms/book/16",
 							"host": [
 								"localhost"
 							],
@@ -154,7 +125,7 @@
 							"path": [
 								"cms",
 								"book",
-								"4"
+								"16"
 							]
 						}
 					},
@@ -220,35 +191,6 @@
 					"response": []
 				},
 				{
-					"name": "UpdateBook",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"title\": \"title name update\",\n    \"released_year\": 1999,\n    \"authors\": [3,4,5]\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "localhost:8080/cms/book/20",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"cms",
-								"book",
-								"20"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "GetAuthorProfile",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
@@ -287,7 +229,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"keyword\": \"a\",\n    \"sort\": \"age\",\n    \"descending\": false\n}\n// sort: age | name",
+							"raw": "{\n    \"keyword\": \"a\",\n    \"sort\": \"name\",\n    \"descending\": false\n}\n// sort: age | name",
 							"options": {
 								"raw": {
 									"language": "json"
