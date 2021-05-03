@@ -60,13 +60,19 @@ func (r *repository) Create(in entity.Video) (*entity.Video, error) {
 }
 func (r *repository) Update(in entity.Video) (*entity.Video, error) {
 	videoModel := VideoModel{}.FromVideoEntity(in)
+	_, err := r.Get(in.Id)
+	if errors.Is(err, irepository.ErrVideoNotFound) {
+		return nil, nil
+	}
+
 	timeNow := time.Now()
 	videoModel.CreatedAt = nil
 	videoModel.UpdatedAt = &timeNow
-	err := r.db.Table(r.tableName).Where("id = ?", in.Id).Updates(&videoModel).Error
+	err = r.db.Table(r.tableName).Where("id = ?", in.Id).Updates(&videoModel).Error
 	if err != nil {
 		return nil, err
 	}
+
 	return videoModel.ToVideoEntity(), nil
 
 }
