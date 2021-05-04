@@ -5,15 +5,14 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	author_profile_usecase "github.com/herryg91/go-clean-architecture/examples/book-rest-api/app/usecase/author_profile"
-	cms_usecase "github.com/herryg91/go-clean-architecture/examples/book-rest-api/app/usecase/cms"
+	"github.com/herryg91/go-clean-architecture/examples/book-rest-api/app/usecase/book_page"
 	"github.com/herryg91/go-clean-architecture/examples/book-rest-api/config"
 	"github.com/herryg91/go-clean-architecture/examples/book-rest-api/handler"
-	"github.com/herryg91/go-clean-architecture/examples/book-rest-api/repository/author_repository_v1"
 	"github.com/herryg91/go-clean-architecture/examples/book-rest-api/repository/book_repository_v1"
 	"gorm.io/gorm/logger"
 
 	"github.com/herryg91/go-clean-architecture/examples/book-rest-api/pkg/mysql"
+	"github.com/herryg91/go-clean-architecture/examples/book-rest-api/pkg/redis"
 )
 
 func main() {
@@ -24,27 +23,18 @@ func main() {
 	if err != nil {
 		log.Panicln("Failed to Initialized mysql DB:", err)
 	}
+	rdsPool, err := redis.Connect(cfg.RedisHost, cfg.RedisPort, "")
+	if err != nil {
+		log.Panicln("Failed to Initialized redis:", err)
+	}
+	book_repo := book_repository_v1.New(db, rdsPool)
+	book_page_uc := book_page.NewUseCase(book_repo)
 
-	author_repo := author_repository_v1.New(db)
-	book_repo := book_repository_v1.New(db)
-
-	cms_uc := cms_usecase.NewUseCase(book_repo, author_repo)
-	author_profile_uc := author_profile_usecase.NewUseCase(author_repo)
-
-	h := handler.NewHandler(cms_uc, author_profile_uc)
+	h := handler.NewHandler(book_page_uc)
 
 	/* CRUD author for CMS */
-	router.GET("/cms/author", h.GetAuthors)
-	router.GET("/cms/author/:id", h.GetAuthor)
-	router.POST("/cms/author", h.CreateAuthor)
-
-	/* CRUD book for CMS */
-	router.GET("/cms/book", h.GetBooks)
-	router.GET("/cms/book/:id", h.GetBook)
-	router.POST("/cms/book", h.CreateBook)
-
-	router.GET("/author/:id/profile", h.GetAuthorProfile)
-	router.POST("/search/author", h.SearchAuthor)
+	router.GET("/book/:id", h.GetBook)
+	router.POST("/book/search", h.SearchBook)
 
 	router.Run(fmt.Sprintf(":%d", cfg.Port))
 }

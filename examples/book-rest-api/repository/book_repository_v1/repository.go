@@ -1,112 +1,114 @@
 package book_repository_v1
 
 import (
+	"encoding/json"
 	"errors"
-	"time"
+	"fmt"
 
+	"github.com/gomodule/redigo/redis"
 	irepository "github.com/herryg91/go-clean-architecture/examples/book-rest-api/app/repository"
 	"github.com/herryg91/go-clean-architecture/examples/book-rest-api/entity"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
 type repository struct {
-	db *gorm.DB
+	db      *gorm.DB
+	rdsPool *redis.Pool
+	rdsTtl  int
 }
 
-func New(db *gorm.DB) irepository.BookRepository {
-	return &repository{db}
+func New(db *gorm.DB, rdsPool *redis.Pool) irepository.BookRepository {
+	return &repository{db, rdsPool, 60}
 }
 
 func (r *repository) Get(id int) (*entity.Book, error) {
-	bookData := &Book{}
-	err := r.db.Table("books").Where("id = ?", id).First(&bookData).Error
+	bookData := &BookWithRating{}
+
+	rdsKey := fmt.Sprintf("book:%d", id)
+	// Get From Cache if Possible
+	cachedData, err := r.getBookFromCache(rdsKey)
+	if err != nil {
+		logrus.Warn(err)
+	} else if cachedData != nil {
+		return cachedData, nil
+	}
+
+	// Fallback if there is not cache
+	err = r.db.Raw(`SELECT b.*, AVG(br.rating) as rating
+		FROM books b LEFT JOIN book_rating br on b.id = br.book_id
+		WHERE b.id = ?
+		GROUP BY b.id
+	`, id).First(&bookData).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, irepository.ErrBookNotFound
 		}
 		return nil, err
 	}
-	bookAuthorDatas := []*BookAuthor{}
-	err = r.db.Table("book_authors").Where("book_id = ?", id).Find(&bookAuthorDatas).Error
+
+	// Set To Cache
+	out := bookData.ToBookEntity()
+	err = r.setBookToCache(rdsKey, out, r.rdsTtl)
 	if err != nil {
-		return nil, err
+		logrus.Warn(err)
 	}
 
-	resp := bookData.ToBookEntity()
-	for _, bookAuthor := range bookAuthorDatas {
-		resp.AddAuthor(*bookAuthor.ToBookAuthorEntity())
-	}
-	return resp, nil
+	return out, nil
 }
 
-func (r *repository) GetAll() ([]*entity.Book, error) {
-	bookDatas := []*Book{}
-	err := r.db.Table("books").Find(&bookDatas).Error
+func (r *repository) getBookFromCache(key string) (out *entity.Book, err error) {
+	out = nil
+	rdsConn := r.rdsPool.Get()
+	defer rdsConn.Close()
+
+	cachedData, errRds := redis.String(rdsConn.Do("GET", key))
+	if errRds != nil {
+		if !errors.Is(errRds, redis.ErrNil) {
+			err = errors.New("[21001] redis error: " + errRds.Error())
+			return
+		}
+		err = nil
+		return
+	}
+	if cachedData != "" {
+		err = json.Unmarshal([]byte(cachedData), &out)
+		if err != nil {
+			return
+		}
+	}
+	return
+}
+func (r *repository) setBookToCache(key string, data interface{}, ttl int) error {
+	rdsConn := r.rdsPool.Get()
+	defer rdsConn.Close()
+
+	marshalledData, err := json.Marshal(&data)
 	if err != nil {
-		return nil, err
+		return errors.New("[21002] marshal error: " + err.Error())
+	}
+	_, err = rdsConn.Do("SETEX", key, ttl, string(marshalledData))
+	if err != nil {
+		return errors.New("[21003] redis error: " + err.Error())
 	}
 
-	bookIds := []int{}
-	for _, b := range bookDatas {
-		bookIds = append(bookIds, b.Id)
-	}
-	mapBookAuthorDatas := map[int][]*BookAuthor{}
-	if len(bookIds) > 0 {
-		bookAuthorDatas := []*BookAuthor{}
-		err = r.db.Table("book_authors").Where("book_id in (?)", bookIds).Find(&bookAuthorDatas).Error
-		if err != nil {
-			return nil, err
-		}
-		for _, ba := range bookAuthorDatas {
-			if _, ok := mapBookAuthorDatas[ba.BookId]; !ok {
-				mapBookAuthorDatas[ba.BookId] = []*BookAuthor{}
-			}
-			mapBookAuthorDatas[ba.BookId] = append(mapBookAuthorDatas[ba.BookId], ba)
-		}
+	return nil
+}
+
+func (r *repository) Search(keyword string) ([]*entity.Book, error) {
+	bookDatas := []*BookWithRating{}
+	err := r.db.Raw(`SELECT b.*, AVG(br.rating) as rating
+		FROM books b LEFT JOIN book_rating br on b.id = br.book_id
+		WHERE b.title like ?
+		GROUP BY b.id
+	`, "%"+keyword+"%").First(&bookDatas).Error
+	if err != nil {
+		return nil, err
 	}
 
 	resp := []*entity.Book{}
 	for _, b := range bookDatas {
-		tmpResp := b.ToBookEntity()
-		if authoDatas, ok := mapBookAuthorDatas[b.Id]; ok {
-			for _, authorData := range authoDatas {
-				tmpResp.AddAuthor(*authorData.ToBookAuthorEntity())
-			}
-		}
-		resp = append(resp, tmpResp)
+		resp = append(resp, b.ToBookEntity())
 	}
 	return resp, nil
-}
-
-func (r *repository) Create(in entity.Book) (*entity.Book, error) {
-	bookModel := Book{}.FromBookEntity(&in)
-
-	timeNow := time.Now()
-	bookModel.CreatedAt = &timeNow
-	bookModel.UpdatedAt = &timeNow
-
-	tx := r.db.Begin()
-
-	err := tx.Table("books").Create(&bookModel).Error
-	if err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-	in.Id = bookModel.Id
-
-	for _, author := range in.Authors {
-		bookAuthorModel := BookAuthor{}.FromBookAuthorEntity(bookModel.Id, &author)
-		err = tx.Table("book_authors").Create(&bookAuthorModel).Error
-		if err != nil {
-			tx.Rollback()
-			return nil, err
-		}
-	}
-
-	err = tx.Commit().Error
-	if err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-	return &in, nil
 }

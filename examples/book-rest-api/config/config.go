@@ -15,6 +15,9 @@ type Config struct {
 	DBPassword     string `envconfig:"DB_PASSWORD" default:"password"`
 	DBDatabaseName string `envconfig:"DB_DBNAME" default:"gca"`
 	DBLogMode      int    `envconfig:"DB_LOG_MODE" default:"3"`
+
+	RedisHost string `envconfig:"REDIS_HOST" default:"localhost"`
+	RedisPort string `envconfig:"REDIS_PORT" default:"33792"`
 }
 
 func New() Config {

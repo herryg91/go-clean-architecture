@@ -1,9 +1,7 @@
 # book-rest-api
-This is example of rest api using clean architecture with 2 entities: 
-* book
-* author
+This is example of rest api using clean architecture with single entity: `book`. In this example, more complex than video-rest-api case since the entity in this service is not represent database schema.
 
-This service had a purpose to serve a CMS used by operational team to manage master data of **book** and **author**. Beside that this service also used by end user service client to to show author's profile.
+In this microservice, we're gonna use both mysql and redis which will be aggregated in repository to serve what the microservice needs based on the usecase.
 
 **How to Run?
 Prerequisite:
@@ -17,18 +15,11 @@ go run main.go
 
 **Usecase solved in this example**
 * Aggregate 2 or more database's tables
-* Multiple usecases:
-    * Simple CRUD/Create Read Update Delete (will be used by CMS)
-    * Profile Usecase (will be used by end user client service)
+* Handle Join Query
+* Using redis + mysql in repository
 
 **List of endpoints**
 ```bash
-GET    /cms/author
-GET    /cms/author/:id
-POST   /cms/author
-GET    /cms/book
-GET    /cms/book/:id
-POST   /cms/book
-GET    /author/:id/profile
-POST   /search/author
+GET    /book/:id
+POST   /book/search
 ```

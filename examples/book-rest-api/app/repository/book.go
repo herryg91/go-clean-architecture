@@ -10,6 +10,8 @@ var ErrBookNotFound = errors.New("Book not found")
 
 type BookRepository interface {
 	Get(id int) (*entity.Book, error)
-	GetAll() ([]*entity.Book, error)
-	Create(in entity.Book) (*entity.Book, error)
+	Search(keyword string) ([]*entity.Book, error)
+
+	// GetAll() ([]*entity.Book, error)
+	// Create(in entity.Book) (*entity.Book, error)
 }

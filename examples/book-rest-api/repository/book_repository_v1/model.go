@@ -14,13 +14,12 @@ type Book struct {
 	UpdatedAt    *time.Time `gorm:"column:updated_at"`
 }
 
-func (b *Book) ToBookEntity() *entity.Book {
+func (b *Book) ToBookEntity(rating float64) *entity.Book {
 	return &entity.Book{
 		Id:           b.Id,
 		Title:        b.Title,
 		ReleasedYear: b.ReleasedYear,
-		CreatedAt:    b.CreatedAt,
-		UpdatedAt:    b.UpdatedAt,
+		Rating:       rating,
 	}
 }
 func (Book) FromBookEntity(e *entity.Book) *Book {
@@ -28,29 +27,19 @@ func (Book) FromBookEntity(e *entity.Book) *Book {
 		Id:           e.Id,
 		Title:        e.Title,
 		ReleasedYear: e.ReleasedYear,
-		CreatedAt:    e.CreatedAt,
-		UpdatedAt:    e.UpdatedAt,
 	}
 }
 
-type BookAuthor struct {
-	BookId   int `gorm:"column:book_id"`
-	AuthorId int `gorm:"column:author_id"`
-
-	CreatedAt *time.Time `gorm:"column:created_at"`
-	UpdatedAt *time.Time `gorm:"column:updated_at"`
+type BookWithRating struct {
+	Book
+	Rating float64 `gorm:"column:rating"`
 }
 
-func (ba *BookAuthor) ToBookAuthorEntity() *entity.BookAuthor {
-	return &entity.BookAuthor{
-		Id:   ba.AuthorId,
-		Name: "",
-	}
-}
-
-func (BookAuthor) FromBookAuthorEntity(bookId int, e *entity.BookAuthor) *BookAuthor {
-	return &BookAuthor{
-		BookId:   bookId,
-		AuthorId: e.Id,
+func (b *BookWithRating) ToBookEntity() *entity.Book {
+	return &entity.Book{
+		Id:           b.Id,
+		Title:        b.Title,
+		ReleasedYear: b.ReleasedYear,
+		Rating:       b.Rating,
 	}
 }
