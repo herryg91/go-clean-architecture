@@ -9,97 +9,6 @@
 			"name": "book-rest-api",
 			"item": [
 				{
-					"name": "GetAuthors",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "localhost:8080/cms/author",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"cms",
-								"author"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "GetAuthor",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "localhost:8080/cms/author/6",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"cms",
-								"author",
-								"6"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "CreateAuthor",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"author name\",\n    \"birthdate\": \"1952-12-05\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "localhost:8080/cms/author",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"cms",
-								"author"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "GetBook",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
@@ -117,59 +26,27 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/cms/book/16",
+							"raw": "localhost:8080/book/4",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
-								"cms",
 								"book",
-								"16"
+								"4"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "GetBooks",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "localhost:8080/cms/book",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"cms",
-								"book"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "CreateBook",
+					"name": "SearchBook",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"title\": \"title name\",\n    \"released_year\": 1999,\n    \"authors\": [3,4]\n}",
+							"raw": "{\n    \"keyword\": \"clean\",\n    \"sort\": \"rating\",\n    \"descending\": true\n}\n// sort: title | rating | year",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -177,74 +54,14 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/cms/book",
+							"raw": "localhost:8080/book/search",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
-								"cms",
-								"book"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "GetAuthorProfile",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"title\": \"title name 2\",\n    \"released_year\": 1999,\n    \"authors\": [3,4,5]\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "localhost:8080/author/1/profile",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"author",
-								"1",
-								"profile"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "SearchAuthor",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"keyword\": \"a\",\n    \"sort\": \"name\",\n    \"descending\": false\n}\n// sort: age | name",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "localhost:8080/search/author",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"search",
-								"author"
+								"book",
+								"search"
 							]
 						}
 					},
