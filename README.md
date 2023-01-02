@@ -1,5 +1,5 @@
 # go-clean-architecture
-The right way to implement clean architecture on golang (I think) :yum:. Just kidding, let's discuss together.
+The right way to implement clean architecture on golang (I think) :yum:. Promotion stuff: to help you easier writing code you can check https://kodingless.com . This platform was made inspired from this go-clean-architecture
 
 ## Description
 The Clean Architecture is a software architecture proposed by Robert C. Martin (better known as Uncle Bob). In this repository, the contents are list of examples of implementation of Clean Architecture in Golang. The examples will using real world scenario. 
